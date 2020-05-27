@@ -44,8 +44,6 @@ func buildMessage(f intigriti.Finding) slack.Payload {
 
 	return slack.Payload{
 		Username:    "intigriti",
-		IconUrl: "https://www.intigriti.com/assets/img/intigriti-kumkn.png",
-		IconEmoji: ":ghost:",
 		Text:        fmt.Sprintf("A new finding was published by *%s* for *%s*: <%s|%s>",
 			cleanStr(f.Researcher), cleanStr(f.Program), f.URL, cleanStr(f.Title)),
 		Attachments: []slack.Attachment{attach},
