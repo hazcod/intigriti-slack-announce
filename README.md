@@ -1,5 +1,6 @@
 intigriti-slack-announce
 ========================
+Go bot that publishes new intigriti findings to Slack.
 
 ## Setup
 1. Download [the latest isa release](https://github.com/hazcod/intigriti-slack-announce/releases).
