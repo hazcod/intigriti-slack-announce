@@ -2,7 +2,7 @@ intigriti-slack-announce
 ========================
 
 # Setup
-1. Download `isa`
+1. Download [the latest isa release](https://github.com/hazcod/intigriti-slack-announce/releases).
 2. Create a [Slack incoming Webhook](https://api.slack.com/messaging/webhooks#getting_started).
 3. Retrieve your [intigriti API token](https://intigriti.com/) and pass your (external) IP address for whitelisting.
 4. Create your configuration file:
