@@ -14,6 +14,7 @@ import (
 const (
 	defaultConfName = "isa.yaml"
 	defaultLogLevel = logrus.InfoLevel
+	defaultCheckInterval = 15
 
 	ClientVersion = "intigriti-slack-announce/1.0"
 )
@@ -38,6 +39,10 @@ func main() {
 		log.Fatal(err)
 	}
 	config.ConfigPath = *confPath
+
+	if config.CheckInterval == 0 {
+		config.CheckInterval = defaultCheckInterval
+	}
 
 	if err := findingchecker.RunChecker(config, ClientVersion); err != nil {
 		log.Fatalf("could not run checker: %v", err)

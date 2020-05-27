@@ -1,6 +1,7 @@
 package findingchecker
 
 import (
+	"fmt"
 	"github.com/hazcod/intigriti-slack-announce/config"
 	"github.com/hazcod/intigriti-slack-announce/intigriti"
 	"github.com/hazcod/intigriti-slack-announce/slack"
@@ -12,11 +13,8 @@ import (
 	"time"
 )
 
-const (
-	checkInterval = time.Minute * 5
-)
-
 func schedule(what func(), delay time.Duration, stopChan chan bool) {
+	logrus.WithField("check_interval_minutes", delay.Minutes()).Debug("checks scheduled")
 	ticker := time.NewTicker(delay)
 	go func() {
 		for {
@@ -41,11 +39,7 @@ func findingExists(config config.Config, finding intigriti.Finding) bool {
 	return false
 }
 
-func addToConfig(config *config.Config, findings []intigriti.Finding) error {
-	for _, finding := range findings {
-		config.FindingIDs = append(config.FindingIDs, finding.ID)
-	}
-
+func savetoConfig(config config.Config, findings []intigriti.Finding) error {
 	bytes, err := yaml.Marshal(config)
 	if err != nil {
 		return errors.Wrap(err, "could not marshal config yaml")
@@ -69,7 +63,12 @@ func checkForNew(config config.Config, slckEndpoint slack.Endpoint, intiEndpoint
 		}
 
 		for _, finding := range findings {
-			fLogger := logrus.WithField("finding_id", finding.ID)
+			fLogger := logrus.WithField("finding_id", finding.ID).WithField("finding_state", finding.State)
+
+			if config.IncludeNonReady && !finding.IsReady() {
+				fLogger.Debug("skipping non-ready finding")
+				continue
+			}
 
 			fLogger.Debug("looking if finding exists")
 			if findingExists(config, finding) {
@@ -78,13 +77,16 @@ func checkForNew(config config.Config, slckEndpoint slack.Endpoint, intiEndpoint
 			}
 
 			fLogger.Debug("new finding, sending off to slack")
-			if err := slckEndpoint.Send(slack.Message{Text: "Hello!"}); err != nil {
-				logrus.WithError(err).Error("could not send to slack")
+			if errs := slckEndpoint.Send(finding); len(errs) > 0 {
+				logrus.WithField("errors", fmt.Sprintf("%+v", errs)).
+					Error("could not send to slack")
+			} else {
+				config.FindingIDs = append(config.FindingIDs, finding.ID)
 			}
 		}
 
 		logrus.WithField("findings_size", len(findings)).Debug("saving findings to our config")
-		if err := addToConfig(&config, findings); err != nil {
+		if err := savetoConfig(config, findings); err != nil {
 			logrus.WithError(err).Error("could not add finding ID to config")
 		}
 	}, nil
@@ -108,11 +110,11 @@ func RunChecker(config config.Config, clientVersion string) error {
 	stopChan := make(chan bool)
 
 	// recurring runs
-	schedule(checkFunc, checkInterval, stopChan)
+	schedule(checkFunc, time.Minute * time.Duration(config.CheckInterval), stopChan)
 
 	logrus.Info("checker is is now running")
 
-	// first run
+	// trigger first run immediately
 	checkFunc()
 
 	return nil

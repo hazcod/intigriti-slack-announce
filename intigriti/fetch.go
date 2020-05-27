@@ -7,10 +7,16 @@ import (
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
+const (
+	intigritiSubmissionUrl = ""
+)
+
 type fetchResponse []struct {
+	SubmissionDetailUrl string `json:"submissionDetailUrl"`
 	Code              string `json:"code"`
 	InternalReference struct {
 		Reference string `json:"reference"`
@@ -98,6 +104,8 @@ type fetchResponse []struct {
 }
 
 type Finding struct {
+	Type 		string
+	Program		string
 	ID			string
 	URL			string
 	Title		string
@@ -105,6 +113,22 @@ type Finding struct {
 	Severity	string
 	Timestamp	time.Time
 	Endpoint	string
+	State 		string
+}
+
+func (f *Finding) IsReady() bool {
+	switch strings.ToLower(f.State) {
+	case "triage":
+		return false
+	case "closed":
+		return false
+	case "accepted":
+		return false
+	case "archived":
+		return false
+	default:
+		return true
+	}
 }
 
 func (i *Endpoint) Get() ([]Finding, error) {
@@ -119,18 +143,19 @@ func (i *Endpoint) Get() ([]Finding, error) {
 		return findings, errors.Wrap(err, "could not create http request to intigriti")
 	}
 
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("X-Client", i.clientTag)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer " + i.authToken))
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return findings, errors.Wrap(err, "message sending to intigriti failed")
+		return findings, errors.Wrap(err, "fetching to intigriti failed")
 	}
 
 	defer resp.Body.Close()
 	if resp.StatusCode > 399 {
-		return findings, errors.Errorf("message fetch from intigriti returned status code: %d", resp.StatusCode)
+		return findings, errors.Errorf("fetch from intigriti returned status code: %d", resp.StatusCode)
 	}
 
 	var fetchResp fetchResponse
@@ -145,13 +170,17 @@ func (i *Endpoint) Get() ([]Finding, error) {
 
 	for _, entry := range fetchResp {
 		findings = append(findings, Finding{
-			ID:			entry.InternalReference.Reference,
-			URL:		entry.InternalReference.URL,
+			State: 		entry.State.Status.Value,
+			Type:		entry.Type.Name,
+			Program:    entry.Program.Name,
+			ID:			entry.Code,
+			// TODO wait for illias to implement FE url
+			URL:		"https://intigriti.com/",
 			Title:      entry.Title,
 			Researcher: entry.Researcher.UserName,
 			Severity:   entry.Severity.Value,
 			Timestamp: 	time.Unix(int64(entry.CreatedAt), 0),
-			Endpoint:   entry.Domain.Value,
+			Endpoint:   entry.EndpointVulnerableComponent,
 		})
 	}
 

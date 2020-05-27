@@ -10,6 +10,8 @@ type Config struct {
 	ConfigPath				string		`yaml:"-"`
 	FindingIDs				[]string	`yaml:"findings"`
 
+	IncludeNonReady			bool 		`yaml:"include_non_ready"`
+	CheckInterval			uint		`yaml:"check_interval_minutes"`
 	SlackWebhookURL			string		`yaml:"slack_url"`
 	IntigritiClientID		string		`yaml:"intigriti_client_id"`
 	IntigritiClientSecret	string		`yaml:"intigriti_client_secret"`

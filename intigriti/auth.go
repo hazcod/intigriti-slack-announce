@@ -11,6 +11,11 @@ import (
 	"time"
 )
 
+const (
+	expectedTokenType  = "bearer"
+	expectedTokenScope = "external_api"
+)
+
 type authResponse struct {
 	AccessToken			string	`json:"access_token"`
 	ExpiresAtSeconds	int		`json:"expires_in"`
@@ -37,7 +42,7 @@ func (i *Endpoint) Authenticate() error {
 		return errors.Wrap(err, "could not create http request to intigriti")
 	}
 
-	req.Header.Set("Content-Type", "multipart/form-data")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("X-Client", i.clientTag)
 
 	client := http.Client{}
@@ -62,19 +67,20 @@ func (i *Endpoint) Authenticate() error {
 		return errors.Wrap(err, "could not decode intigriti auth response")
 	}
 
-	newExpTime := time.Now().Add(time.Second * time.Duration(authResponse.ExpiresAtSeconds))
-	if newExpTime.After(time.Now()) {
-		return errors.New("new token expiration time is now")
+	now = time.Now()
+	newExpTime := now.Add(time.Second * time.Duration(authResponse.ExpiresAtSeconds))
+	if newExpTime.Before(now) {
+		return errors.Errorf("new expiration time %s is before %s", newExpTime, now)
 	}
 
 	i.authTokenExp = newExpTime
 	i.authToken = authResponse.AccessToken
 
-	if authResponse.TokenType != expectedTokenType {
+	if strings.ToLower(authResponse.TokenType) != expectedTokenType {
 		logrus.WithField("token_type", authResponse.TokenType).Warn("unexpected token type")
 	}
 
-	if authResponse.Scope != expectedTokenScope {
+	if strings.ToLower(authResponse.Scope) != expectedTokenScope {
 		logrus.WithField("token_scope", authResponse.Scope).Warn("unexpected token scope")
 	}
 
