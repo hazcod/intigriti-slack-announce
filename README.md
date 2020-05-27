@@ -7,9 +7,16 @@ intigriti-slack-announce
 3. Retrieve your [intigriti API token](https://intigriti.com/) and pass your (external) IP address for whitelisting.
 4. Create your configuration file:
 ```yaml
-include_non_ready: true
+# skip findings in audit, archived and closed
+include_non_ready: false
+
+# how often to check in minutes
 check_interval_minutes: 15
+
+# your slack webhook
 slack_url: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+
+# your intigriti API credentials
 intigriti_client_id: "XXXXXXXXXXX"
 intigriti_client_secret: "XXXXXXXXXXX"
 ```
