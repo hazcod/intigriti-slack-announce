@@ -16,8 +16,6 @@ jobs:
       -
         name: Set up Go
         uses: actions/setup-go@v2
-        with:
-          go-version: latest
       -
         name: Release
         uses: goreleaser/goreleaser-action@v2
