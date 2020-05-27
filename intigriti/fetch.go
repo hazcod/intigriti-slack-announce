@@ -11,10 +11,6 @@ import (
 	"time"
 )
 
-const (
-	intigritiSubmissionUrl = ""
-)
-
 type fetchResponse []struct {
 	SubmissionDetailUrl string `json:"submissionDetailUrl"`
 	Code              string `json:"code"`
