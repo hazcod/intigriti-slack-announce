@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	regexRemove = regexp.MustCompile("[\\W_]+")
+	regexRemove = regexp.MustCompile(`[\\W_]+`)
 )
 
 // remove all chars except alphanumeric

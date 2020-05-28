@@ -50,7 +50,7 @@ func main() {
 
 	logrus.Debug("waiting for SIGTERM")
 
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
 	logrus.Info("shutting down")

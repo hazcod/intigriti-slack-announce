@@ -107,7 +107,7 @@ func RunChecker(config config.Config, clientVersion string) error {
 	}
 
 	// should we ever want to stop it
-	stopChan := make(chan bool)
+	stopChan := make(chan bool, 1)
 
 	// recurring runs
 	schedule(checkFunc, time.Minute * time.Duration(config.CheckInterval), stopChan)
