@@ -1,7 +1,10 @@
 name: Todo
-on: [push]
+on:
+  push:
+    branches:
+      - master
 jobs:
-  build:
+  todo:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
