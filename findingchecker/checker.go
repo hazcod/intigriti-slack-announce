@@ -2,8 +2,8 @@ package findingchecker
 
 import (
 	"fmt"
+	"github.com/hazcod/go-intigriti"
 	"github.com/hazcod/intigriti-slack-announce/config"
-	"github.com/hazcod/intigriti-slack-announce/intigriti"
 	"github.com/hazcod/intigriti-slack-announce/slack"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -29,7 +29,7 @@ func schedule(what func(), delay time.Duration, stopChan chan bool) {
 	}()
 }
 
-func findingExists(config config.Config, finding intigriti.Finding) bool {
+func findingExists(config config.Config, finding intigriti.Submission) bool {
 	for _, fID := range config.FindingIDs {
 		if fID == finding.ID {
 			return true
@@ -39,7 +39,7 @@ func findingExists(config config.Config, finding intigriti.Finding) bool {
 	return false
 }
 
-func savetoConfig(config config.Config, findings []intigriti.Finding) error {
+func savetoConfig(config config.Config, findings []intigriti.Submission) error {
 	bytes, err := yaml.Marshal(config)
 	if err != nil {
 		return errors.Wrap(err, "could not marshal config yaml")
@@ -51,7 +51,7 @@ func savetoConfig(config config.Config, findings []intigriti.Finding) error {
 func checkForNew(config config.Config, slckEndpoint slack.Endpoint, intiEndpoint intigriti.Endpoint) (func(), error) {
 	return func(){
 		logrus.Debug("checking for new findings")
-		findings, err := intiEndpoint.Get()
+		findings, err := intiEndpoint.GetSubmissions()
 		if err != nil {
 			logrus.WithError(err).Error("could not fetch from intigriti")
 			return
@@ -99,7 +99,7 @@ func RunChecker(config config.Config, clientVersion string) error {
 	}
 
 	slackEndpoint := slack.NewEndpoint(*slackUrl, clientVersion)
-	intigritiEndpoint := intigriti.NewEndpoint(config.IntigritiClientID, config.IntigritiClientSecret, clientVersion)
+	intigritiEndpoint := intigriti.New(config.IntigritiClientID, config.IntigritiClientSecret)
 
 	checkFunc, err := checkForNew(config, slackEndpoint, intigritiEndpoint)
 	if err != nil {
