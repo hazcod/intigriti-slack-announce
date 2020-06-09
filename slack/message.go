@@ -3,7 +3,7 @@ package slack
 import (
 	"fmt"
 	"github.com/ashwanthkumar/slack-go-webhook"
-	"github.com/hazcod/intigriti-slack-announce/intigriti"
+	"github.com/hazcod/go-intigriti"
 	"regexp"
 )
 
@@ -16,7 +16,7 @@ func cleanStr(str string) string {
 	return string(regexRemove.ReplaceAll([]byte(str), []byte("")))
 }
 
-func buildMessage(f intigriti.Finding) slack.Payload {
+func buildMessage(f intigriti.Submission) slack.Payload {
 	attach := slack.Attachment{}
 
 	/*
