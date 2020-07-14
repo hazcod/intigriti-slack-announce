@@ -4,7 +4,7 @@ Go bot that publishes (non-sensitive) new intigriti findings to Slack.
 
 ## Setup
 1. Download [the latest isa release](https://github.com/hazcod/intigriti-slack-announce/releases).
-2. Create a [Slack incoming Webhook](https://api.slack.com/messaging/webhooks#getting_started).
+2. Create a Slack app, create a [Slack incoming Webhook](https://api.slack.com/messaging/webhooks#getting_started) and add `chat:write` permissions.
 3. Retrieve your [intigriti API token](https://intigriti.com/) and pass your (external) IP address for whitelisting.
 4. Create your configuration file:
 ```yaml
