@@ -45,7 +45,7 @@ func buildMessage(f intigriti.Submission) slack.Payload {
 	return slack.Payload{
 		Username:    "intigriti",
 		Text:        fmt.Sprintf("A new finding was published by *%s* for *%s*: <%s|%s>",
-			cleanStr(f.Researcher), cleanStr(f.Program), f.URL, cleanStr(f.Title)),
+			cleanStr(f.Researcher.Username), cleanStr(f.Program.Name), f.URL, cleanStr(f.Title)),
 		Attachments: []slack.Attachment{attach},
 	}
 }
