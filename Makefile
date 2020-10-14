@@ -9,3 +9,6 @@ run:
 
 clean:
 	rm -r ./build || true
+
+update:
+	go get -u all && go mod vendor && go mod tidy && go mod vendor
