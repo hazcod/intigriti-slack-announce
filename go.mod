@@ -7,7 +7,7 @@ require (
 	github.com/elazarl/goproxy v0.0.0-20200809112317-0581fc3aee2d // indirect
 	github.com/elazarl/goproxy/ext v0.0.0-20200809112317-0581fc3aee2d // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
-	github.com/hazcod/go-intigriti v1.2.1
+	github.com/hazcod/go-intigriti v1.2.2
 	github.com/parnurzeal/gorequest v0.2.16 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.0
