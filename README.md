@@ -1,6 +1,6 @@
 intigriti-slack-announce
 ========================
-Go bot that publishes (non-sensitive) new intigriti findings to Slack.
+Go bot that publishes any new intigriti submission titles to Slack.
 
 ## Setup
 1. Download [the latest isa release](https://github.com/hazcod/intigriti-slack-announce/releases).
