@@ -8,7 +8,7 @@ Go bot that publishes any new intigriti submission titles to Slack.
 3. Retrieve your [intigriti API token](https://intigriti.com/) and pass your (external) IP address for whitelisting.
 4. Create your configuration file:
 ```yaml
-# skip findings in audit, archived and closed
+# skip findings in triage, archived and closed
 include_non_ready: false
 
 # how often to check in minutes
